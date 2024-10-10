@@ -1,0 +1,45 @@
+package com.invoiceprocessing.server.services;
+
+import com.invoiceprocessing.server.dao.InvoiceDao;
+import com.invoiceprocessing.server.model.Invoice;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class InvoiceServiceImpl implements InvoiceService{
+
+    @Autowired
+    InvoiceDao invoiceDao;
+
+    @Override
+    public Invoice addInvoice(Invoice invoice) {
+        invoiceDao.save(invoice);
+        return invoice;
+    }
+
+    @Override
+    public List<Invoice> getInvoices() {
+        return invoiceDao.findAll();
+    }
+
+    @Override
+    public Invoice deleteinvoice(long id) {
+        Invoice invoice = invoiceDao.findById(id).get();
+        invoiceDao.delete(invoice);
+        return invoice;
+    }
+
+    @Override
+    public Invoice approveInvoice(long id){
+        Invoice invoice = invoiceDao.findById(id).orElseThrow(() -> new RuntimeException("Invoice not found"));
+        invoice.setAction("approved");
+        return invoiceDao.save(invoice);
+    }
+
+    @Override
+    public Invoice getInvoiceById(long id){
+        return invoiceDao.findById(id).orElse(null);
+    }
+}
